@@ -1,0 +1,56 @@
+$ python tracker.py import products.json
+  #1: A Light in the Attic (demo book)
+  #2: Tipping the Velvet (demo book)
+  #3: Bulbasaur (demo shop item)
+imported 3 product(s) from products.json
+
+$ python tracker.py check
+checking #1: A Light in the Attic (demo book)
+
+[ALERT - no delivery method configured]
+  Price drop: A Light in the Attic
+  A Light in the Attic
+  https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html
+  
+  Current price : 51.77 GBP
+  Target price  : 55.00
+  First seen at : 51.77
+  Why           : at/below target 55.00
+    price: 51.77 GBP (in stock)
+checking #2: Tipping the Velvet (demo book)
+    price: 53.74 GBP (in stock)
+checking #3: Bulbasaur (demo shop item)
+    price: 63.00 GBP (in stock)
+
+done: 3 checked, 3 ok, 0 failed, 0 alert(s) sent
+
+$ python tracker.py list
+#1  A Light in the Attic (demo book)
+     url    : https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html
+     latest : 51.77 GBP
+     alert when target <= 55.00
+#2  Tipping the Velvet (demo book)
+     url    : https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html
+     latest : 53.74 GBP
+     alert when target <= 40.00 or drop >= 15%
+#3  Bulbasaur (demo shop item)
+     url    : https://scrapeme.live/shop/Bulbasaur/
+     latest : 63.00 GBP
+     alert when target <= 60.00
+
+$ python tracker.py history 2
+#2  Tipping the Velvet (demo book)
+  2026-09-07T12:19:47+00:00     53.74 GBP in-stock
+  --- 1 point, low 53.74, high 53.74
+
+# --- failure handling: a URL that 404s ---
+$ python tracker.py add "https://books.toscrape.com/catalogue/nope_9999/index.html" 10
+tracking #4: https://books.toscrape.com/catalogue/nope_9999/index.html
+  alert when target <= 10.00
+$ python tracker.py check --only 4
+checking #4: https://books.toscrape.com/catalogue/nope_9999/index.html
+    ! fetch failed: HTTP 404 for https://books.toscrape.com/catalogue/nope_9999/index.html
+
+done: 1 checked, 0 ok, 1 failed, 0 alert(s) sent
+$ python tracker.py remove 4
+stopped tracking #4 (https://books.toscrape.com/catalogue/nope_9999/index.html)

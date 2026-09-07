@@ -1,0 +1,21 @@
+{
+  "_comment": "Optional seed file. Run 'python tracker.py import products.json' to load these into the database. Prices are in the site's own currency (GBP for the demo sites).",
+  "products": [
+    {
+      "name": "A Light in the Attic (demo book)",
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "target_price": 55.00
+    },
+    {
+      "name": "Tipping the Velvet (demo book)",
+      "url": "https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+      "target_price": 40.00,
+      "pct_drop": 15
+    },
+    {
+      "name": "Bulbasaur (demo shop item)",
+      "url": "https://scrapeme.live/shop/Bulbasaur/",
+      "target_price": 60.00
+    }
+  ]
+}
