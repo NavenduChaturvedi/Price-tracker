@@ -105,8 +105,7 @@ def load_settings() -> Settings:
         max_retries=_get_int("MAX_RETRIES", 3),
         user_agent=_get_str(
             "USER_AGENT",
-            "price-tracker-bot/1.0 "
-            "(+https://github.com/NavenduChaturvedi/Price-tracker)",
+            "price-tracker-bot/1.0 (+https://github.com/NavenduChaturvedi/Price-tracker)",
         ),
         db_path=_get_str("DB_PATH", "price_history.db"),
         alert_method=_get_str("ALERT_METHOD", "auto").lower(),
