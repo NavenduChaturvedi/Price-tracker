@@ -64,7 +64,9 @@ def _send_email(subject: str, body: str) -> bool:
     msg.set_content(body)
 
     try:
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=settings.request_timeout) as server:
+        with smtplib.SMTP(
+            settings.smtp_host, settings.smtp_port, timeout=settings.request_timeout
+        ) as server:
             server.starttls()
             server.login(settings.smtp_user, settings.smtp_password)
             server.send_message(msg)

@@ -9,12 +9,11 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import Optional
 
 from . import db
 
 
-def build_chart(identifier: str, output_path: Optional[str] = None) -> Optional[str]:
+def build_chart(identifier: str, output_path: str | None = None) -> str | None:
     """Render a PNG line chart of a product's price history.
 
     Returns the path written, or None if there was nothing to plot.
@@ -34,8 +33,8 @@ def build_chart(identifier: str, output_path: Optional[str] = None) -> Optional[
     import matplotlib
 
     matplotlib.use("Agg")  # headless: no display needed, just write a file
-    import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
+    import matplotlib.pyplot as plt
 
     times = [datetime.fromisoformat(p.checked_at) for p in points]
     prices = [p.price for p in points]

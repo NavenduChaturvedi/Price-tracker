@@ -1,5 +1,9 @@
 # Price Tracker with Alerts
 
+[![CI](https://github.com/NavenduChaturvedi/Price-tracker-scrapping-/actions/workflows/ci.yml/badge.svg)](https://github.com/NavenduChaturvedi/Price-tracker-scrapping-/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A small command-line tool that watches product prices on e-commerce pages,
 keeps a full price history in a local SQLite database, and sends you an alert
 (Telegram or email) when a price drops below a target or falls by a set
@@ -190,3 +194,7 @@ See [DECISIONS.md](DECISIONS.md) for why each choice was made. In short: static
 `requests` + `BeautifulSoup` only (no headless browser), SQLite (no server),
 manual `check` (no built-in scheduler), and demo stores chosen so the portfolio
 piece always runs.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

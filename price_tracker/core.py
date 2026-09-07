@@ -11,7 +11,6 @@ import json
 import random
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 from . import alerts, db, parsers, scraper
 from .config import settings
@@ -22,9 +21,9 @@ from .config import settings
 # --------------------------------------------------------------------------
 def run_add(
     url: str,
-    target_price: Optional[float],
-    name: Optional[str] = None,
-    pct_drop: Optional[float] = None,
+    target_price: float | None,
+    name: str | None = None,
+    pct_drop: float | None = None,
 ) -> None:
     db.init_db()
     if target_price is None and pct_drop is None:
@@ -37,7 +36,7 @@ def run_add(
 def run_import(path: str) -> None:
     """Load products from a products.json seed file."""
     db.init_db()
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
 
     items = data.get("products", data if isinstance(data, list) else [])
@@ -91,14 +90,14 @@ def run_remove(identifier: str) -> None:
 @dataclass
 class CheckOutcome:
     product: db.Product
-    price: Optional[float] = None
-    currency: Optional[str] = None
-    in_stock: Optional[bool] = None
+    price: float | None = None
+    currency: str | None = None
+    in_stock: bool | None = None
     alerted: bool = False
-    error: Optional[str] = None
+    error: str | None = None
 
 
-def run_check(only: Optional[str] = None) -> list[CheckOutcome]:
+def run_check(only: str | None = None) -> list[CheckOutcome]:
     """Scrape every active product once, store the price, and alert on drops.
 
     A failure on one product (site down, layout changed, robots.txt) is caught,
@@ -134,8 +133,10 @@ def run_check(only: Optional[str] = None) -> list[CheckOutcome]:
         if outcome.error:
             print(f"    ! {outcome.error}")
         else:
-            stock = "" if outcome.in_stock is None else (
-                " (in stock)" if outcome.in_stock else " (out of stock)"
+            stock = (
+                ""
+                if outcome.in_stock is None
+                else (" (in stock)" if outcome.in_stock else " (out of stock)")
             )
             print(f"    price: {outcome.price:.2f} {outcome.currency or ''}{stock}".rstrip())
             if outcome.alerted:
@@ -201,9 +202,7 @@ def _should_alert(product: db.Product, price: float) -> tuple[bool, str]:
         if baseline:
             drop_pct = (baseline - price) / baseline * 100
             if drop_pct >= product.pct_drop:
-                triggers.append(
-                    f"down {drop_pct:.1f}% from first seen {baseline:.2f}"
-                )
+                triggers.append(f"down {drop_pct:.1f}% from first seen {baseline:.2f}")
 
     if not triggers:
         return False, ""
@@ -233,7 +232,7 @@ def _alert_body(product: db.Product, parsed: parsers.ParsedProduct, reason: str)
 # --------------------------------------------------------------------------
 # history
 # --------------------------------------------------------------------------
-def run_history(identifier: str, limit: Optional[int] = None) -> None:
+def run_history(identifier: str, limit: int | None = None) -> None:
     db.init_db()
     product = db.get_product(identifier)
     if product is None:
@@ -293,6 +292,4 @@ def _print_summary(outcomes: list[CheckOutcome]) -> None:
     ok = sum(1 for o in outcomes if o.error is None)
     failed = checked - ok
     alerted = sum(1 for o in outcomes if o.alerted)
-    print(
-        f"\ndone: {checked} checked, {ok} ok, {failed} failed, {alerted} alert(s) sent"
-    )
+    print(f"\ndone: {checked} checked, {ok} ok, {failed} failed, {alerted} alert(s) sent")

@@ -28,8 +28,20 @@ from price_tracker import chart, db  # noqa: E402
 
 # A made-up but plausible two-week price slide for a fictional product.
 SYNTHETIC_PRICES = [
-    79.99, 79.99, 74.50, 74.50, 74.50, 69.99,
-    69.99, 65.00, 65.00, 59.99, 62.50, 59.99, 54.99, 54.99,
+    79.99,
+    79.99,
+    74.50,
+    74.50,
+    74.50,
+    69.99,
+    69.99,
+    65.00,
+    65.00,
+    59.99,
+    62.50,
+    59.99,
+    54.99,
+    54.99,
 ]
 
 db.init_db()
@@ -50,6 +62,8 @@ with db._connect() as conn:  # internal helper is fine for a dev script
             (product.id, price, ts),
         )
 
-chart.build_chart(str(product.id), output_path=os.path.join("sample_output", "price_history_chart.png"))
+chart.build_chart(
+    str(product.id), output_path=os.path.join("sample_output", "price_history_chart.png")
+)
 os.remove(DEMO_DB)
 print("done")

@@ -17,10 +17,10 @@ global state and safe to call from anywhere.
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Iterator, Optional
 
 from .config import settings
 
@@ -56,21 +56,21 @@ CREATE INDEX IF NOT EXISTS idx_history_product_time
 class Product:
     id: int
     url: str
-    name: Optional[str]
-    target_price: Optional[float]
-    pct_drop: Optional[float]
-    currency: Optional[str]
+    name: str | None
+    target_price: float | None
+    pct_drop: float | None
+    currency: str | None
     active: int
     created_at: str
-    last_alert_price: Optional[float]
-    last_alert_at: Optional[str]
+    last_alert_price: float | None
+    last_alert_at: str | None
 
 
 @dataclass
 class PricePoint:
     price: float
-    currency: Optional[str]
-    in_stock: Optional[int]
+    currency: str | None
+    in_stock: int | None
     checked_at: str
 
 
@@ -100,14 +100,14 @@ def init_db() -> None:
 # products
 # --------------------------------------------------------------------------
 def _row_to_product(row: sqlite3.Row) -> Product:
-    return Product(**{k: row[k] for k in row.keys()})
+    return Product(**dict(row))
 
 
 def add_product(
     url: str,
-    target_price: Optional[float],
-    name: Optional[str] = None,
-    pct_drop: Optional[float] = None,
+    target_price: float | None,
+    name: str | None = None,
+    pct_drop: float | None = None,
 ) -> Product:
     """Insert a product, or update the thresholds if the URL already exists.
 
@@ -115,9 +115,7 @@ def add_product(
     than an error - that is what a user typing the command again expects.
     """
     with _connect() as conn:
-        existing = conn.execute(
-            "SELECT * FROM products WHERE url = ?", (url,)
-        ).fetchone()
+        existing = conn.execute("SELECT * FROM products WHERE url = ?", (url,)).fetchone()
         if existing is None:
             conn.execute(
                 """INSERT INTO products (url, name, target_price, pct_drop, created_at)
@@ -138,17 +136,13 @@ def add_product(
         return _row_to_product(row)
 
 
-def get_product(identifier: str) -> Optional[Product]:
+def get_product(identifier: str) -> Product | None:
     """Look a product up by numeric id or by URL."""
     with _connect() as conn:
         if identifier.isdigit():
-            row = conn.execute(
-                "SELECT * FROM products WHERE id = ?", (int(identifier),)
-            ).fetchone()
+            row = conn.execute("SELECT * FROM products WHERE id = ?", (int(identifier),)).fetchone()
         else:
-            row = conn.execute(
-                "SELECT * FROM products WHERE url = ?", (identifier,)
-            ).fetchone()
+            row = conn.execute("SELECT * FROM products WHERE url = ?", (identifier,)).fetchone()
     return _row_to_product(row) if row else None
 
 
@@ -169,7 +163,7 @@ def set_product_active(product_id: int, active: bool) -> None:
         )
 
 
-def update_product_meta(product_id: int, name: Optional[str], currency: Optional[str]) -> None:
+def update_product_meta(product_id: int, name: str | None, currency: str | None) -> None:
     """Backfill name/currency once we have learned them from a real scrape."""
     with _connect() as conn:
         conn.execute(
@@ -195,8 +189,8 @@ def record_alert(product_id: int, price: float) -> None:
 def record_price(
     product_id: int,
     price: float,
-    currency: Optional[str],
-    in_stock: Optional[bool],
+    currency: str | None,
+    in_stock: bool | None,
 ) -> None:
     with _connect() as conn:
         conn.execute(
@@ -212,7 +206,7 @@ def record_price(
         )
 
 
-def get_history(product_id: int, limit: Optional[int] = None) -> list[PricePoint]:
+def get_history(product_id: int, limit: int | None = None) -> list[PricePoint]:
     query = (
         "SELECT price, currency, in_stock, checked_at "
         "FROM price_history WHERE product_id = ? ORDER BY checked_at"
@@ -237,11 +231,10 @@ def get_history(product_id: int, limit: Optional[int] = None) -> list[PricePoint
     return points
 
 
-def first_recorded_price(product_id: int) -> Optional[float]:
+def first_recorded_price(product_id: int) -> float | None:
     with _connect() as conn:
         row = conn.execute(
-            "SELECT price FROM price_history WHERE product_id = ? "
-            "ORDER BY checked_at LIMIT 1",
+            "SELECT price FROM price_history WHERE product_id = ? ORDER BY checked_at LIMIT 1",
             (product_id,),
         ).fetchone()
     return row["price"] if row else None

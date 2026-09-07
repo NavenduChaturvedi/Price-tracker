@@ -13,8 +13,8 @@ element it needs is missing (page redesign, bot-block page, wrong URL, ...).
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
@@ -27,9 +27,9 @@ class ParseError(Exception):
 @dataclass
 class ParsedProduct:
     price: float
-    currency: Optional[str]
-    name: Optional[str]
-    in_stock: Optional[bool]
+    currency: str | None
+    name: str | None
+    in_stock: bool | None
 
 
 _CURRENCY_SYMBOLS = {
@@ -53,7 +53,7 @@ def _money_to_float(text: str) -> float:
     return float(match.group())
 
 
-def _detect_currency(text: str) -> Optional[str]:
+def _detect_currency(text: str) -> str | None:
     for symbol, code in _CURRENCY_SYMBOLS.items():
         if symbol in text:
             return code
@@ -66,9 +66,7 @@ def _detect_currency(text: str) -> Optional[str]:
 # --------------------------------------------------------------------------
 def parse_books_toscrape(soup: BeautifulSoup) -> ParsedProduct:
     """books.toscrape.com - a static scraping sandbox."""
-    price_el = soup.select_one("div.product_main p.price_color") or soup.select_one(
-        "p.price_color"
-    )
+    price_el = soup.select_one("div.product_main p.price_color") or soup.select_one("p.price_color")
     if price_el is None:
         raise ParseError("books.toscrape: price_color element not found")
     price_text = price_el.get_text(strip=True)
@@ -154,14 +152,14 @@ def parse_generic(soup: BeautifulSoup) -> ParsedProduct:
     raise ParseError("generic parser: could not locate a price on the page")
 
 
-def _og_currency(soup: BeautifulSoup) -> Optional[str]:
+def _og_currency(soup: BeautifulSoup) -> str | None:
     el = soup.select_one(
         'meta[property="product:price:currency"], meta[property="og:price:currency"]'
     )
     return el["content"].upper() if el and el.get("content") else None
 
 
-def _generic_name(soup: BeautifulSoup) -> Optional[str]:
+def _generic_name(soup: BeautifulSoup) -> str | None:
     og = soup.select_one('meta[property="og:title"]')
     if og and og.get("content"):
         return og["content"].strip()

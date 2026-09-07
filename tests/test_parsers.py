@@ -50,9 +50,7 @@ SCRAPEME_HTML = """
 
 
 def test_parse_books_toscrape():
-    result = parsers.parse(
-        "https://books.toscrape.com/catalogue/x_1/index.html", BOOKS_HTML
-    )
+    result = parsers.parse("https://books.toscrape.com/catalogue/x_1/index.html", BOOKS_HTML)
     assert result.price == 51.77
     assert result.currency == "GBP"
     assert result.name == "A Light in the Attic"
@@ -77,8 +75,10 @@ def test_parse_missing_price_raises():
 
 
 def test_generic_parser_reads_meta_tag():
-    html = '<meta property="product:price:amount" content="19.99">' \
-           '<meta property="product:price:currency" content="USD">'
+    html = (
+        '<meta property="product:price:amount" content="19.99">'
+        '<meta property="product:price:currency" content="USD">'
+    )
     result = parsers.parse("https://some-unknown-shop.example/item/5", html)
     assert result.price == 19.99
     assert result.currency == "USD"

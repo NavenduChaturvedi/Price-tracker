@@ -1,0 +1,32 @@
+[project]
+name = "price-tracker"
+version = "1.0.0"
+description = "Track product prices, store history in SQLite, and alert on drops via Telegram or email."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Navendu Chaturvedi" }]
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "python-dotenv>=1.0",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+price-tracker = "tracker:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]  # long lines in comments/docstrings are fine
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
