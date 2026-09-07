@@ -1,6 +1,6 @@
 # Price Tracker with Alerts
 
-[![CI](https://github.com/NavenduChaturvedi/Price-tracker-scrapping-/actions/workflows/ci.yml/badge.svg)](https://github.com/NavenduChaturvedi/Price-tracker-scrapping-/actions/workflows/ci.yml)
+[![CI](https://github.com/NavenduChaturvedi/Price-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/NavenduChaturvedi/Price-tracker/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -38,8 +38,8 @@ Graceful by design: a bad URL, a site being down, a layout change, or a
 Requires Python 3.10+.
 
 ```bash
-git clone https://github.com/NavenduChaturvedi/Price-tracker-scrapping-.git
-cd Price-tracker-scrapping-
+git clone https://github.com/NavenduChaturvedi/Price-tracker.git
+cd Price-tracker
 
 python -m venv .venv
 # Windows:

@@ -106,7 +106,7 @@ def load_settings() -> Settings:
         user_agent=_get_str(
             "USER_AGENT",
             "price-tracker-bot/1.0 "
-            "(+https://github.com/NavenduChaturvedi/Price-tracker-scrapping-)",
+            "(+https://github.com/NavenduChaturvedi/Price-tracker)",
         ),
         db_path=_get_str("DB_PATH", "price_history.db"),
         alert_method=_get_str("ALERT_METHOD", "auto").lower(),
