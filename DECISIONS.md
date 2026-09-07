@@ -204,3 +204,22 @@ price slide, because the demo sites' prices don't move. It runs the **real**
 `chart.build_chart` code path, and the README labels the image as synthetic.
 Faking the data in a hidden way would be dishonest; showing the feature with
 clearly-labelled sample data is normal.
+
+---
+
+## 11. The web dashboard is an optional, logic-free layer
+
+**Decision:** `webapp/` is a small Flask app in its own optional dependency
+(`requirements-web.txt`). Every route calls the same `core` / `db` functions
+the CLI uses; it renders results and posts back, nothing more.
+
+**Why:**
+
+- The core tool stays a dependency-light CLI - someone who only wants `check`
+  in a cron job never installs Flask.
+- Keeping *all* logic in `price_tracker/` means the dashboard cannot drift from
+  the CLI's behaviour, and the existing tests still cover the real work.
+- Server-rendered Jinja templates and ~200 lines of plain CSS (no build step,
+  no JS framework) are enough for a local dashboard and keep it studyable.
+- Flask over FastAPI/Django: synchronous request-per-scrape is fine for a
+  single local user, and Flask has the least ceremony.

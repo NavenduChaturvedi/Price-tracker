@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="toolbar">
+    <h2 style="margin:0">Tracked products</h2>
+    <span class="spacer"></span>
+    <form class="inline" method="post" action="{{ url_for('check_all') }}">
+      <button type="submit">Check all now</button>
+    </form>
+  </div>
+
+  {% if rows %}
+  <div class="card" style="padding:0">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th class="num">Latest</th>
+          <th class="num">Target</th>
+          <th>Status</th>
+          <th>Last checked</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>
+            <a href="{{ url_for('product', product_id=r.id) }}">{{ r.name }}</a>
+            {% if not r.active %}<span class="tag muted">inactive</span>{% endif %}
+            <div class="muted" style="font-size:12px; color:var(--ink-soft)">{{ r.url }}</div>
+          </td>
+          <td class="num">
+            {% if r.latest is not none %}{{ "%.2f"|format(r.latest) }} {{ r.currency }}{% else %}&mdash;{% endif %}
+          </td>
+          <td class="num">
+            {% if r.target_price is not none %}{{ "%.2f"|format(r.target_price) }}{% endif %}
+            {% if r.pct_drop is not none %}<div class="muted" style="font-size:12px">&minus;{{ r.pct_drop|int }}%</div>{% endif %}
+          </td>
+          <td>
+            {% if r.status == 'at-target' %}<span class="tag good">at / below target</span>
+            {% elif r.status == 'dropped' %}<span class="tag good">price dropped</span>
+            {% elif r.status == 'tracking' %}<span class="tag">tracking</span>
+            {% else %}<span class="tag muted">no data yet</span>{% endif %}
+          </td>
+          <td class="muted" style="font-size:12px">{{ r.last_checked or "never" }}</td>
+          <td style="white-space:nowrap; text-align:right">
+            <form class="inline" method="post" action="{{ url_for('check_one', product_id=r.id) }}">
+              <button class="link" type="submit">check</button>
+            </form>
+            <span class="muted">&nbsp;·&nbsp;</span>
+            <form class="inline" method="post" action="{{ url_for('remove', product_id=r.id) }}"
+                  onsubmit="return confirm('Stop tracking this product?')">
+              <button class="link" type="submit">remove</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty">No products tracked yet. Add one below.</p>
+  {% endif %}
+
+  <h2>Add a product</h2>
+  <div class="card">
+    <form method="post" action="{{ url_for('add') }}">
+      <div class="field-row">
+        <div class="field" style="flex:1 1 320px">
+          <label for="url">Product URL</label>
+          <input type="url" id="url" name="url" required placeholder="https://books.toscrape.com/..." style="width:100%">
+        </div>
+        <div class="field">
+          <label for="name">Name (optional)</label>
+          <input type="text" id="name" name="name" placeholder="learned from the page">
+        </div>
+      </div>
+      <div class="field-row" style="margin-top:12px">
+        <div class="field">
+          <label for="target_price">Target price</label>
+          <input type="number" step="0.01" min="0" id="target_price" name="target_price" placeholder="55.00">
+        </div>
+        <div class="field">
+          <label for="pct_drop">Or % drop</label>
+          <input type="number" step="1" min="1" id="pct_drop" name="pct_drop" placeholder="10">
+        </div>
+        <button type="submit">Track product</button>
+      </div>
+      <p class="muted" style="font-size:12px; margin:12px 0 0; color:var(--ink-soft)">
+        Demo targets: <code>books.toscrape.com</code>, <code>scrapeme.live</code>. Set a target price, a % drop, or both.
+      </p>
+    </form>
+  </div>
+{% endblock %}

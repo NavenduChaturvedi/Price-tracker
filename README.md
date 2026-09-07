@@ -147,6 +147,23 @@ Full transcript: [sample_output/sample_run.txt](sample_output/sample_run.txt).
 
 ---
 
+## Web dashboard (optional)
+
+A small local Flask dashboard over the same `price_tracker` package: list
+tracked products, add one, run a check, and view a product's price history and
+chart. It adds no logic of its own — every button calls the same functions the
+CLI does.
+
+```bash
+pip install -r requirements-web.txt
+python -m webapp          # http://127.0.0.1:5000
+```
+
+![Dashboard](docs/dashboard.png)
+![Product page](docs/product.png)
+
+---
+
 ## Telegram alerts in 2 minutes
 
 1. Message [@BotFather](https://t.me/BotFather) → `/newbot` → copy the token.
@@ -176,6 +193,7 @@ price_tracker/
     alerts.py            Telegram / email delivery (never raises)
     core.py              orchestration for each CLI command
     chart.py             optional matplotlib chart
+webapp/                  optional Flask dashboard (see requirements-web.txt)
 products.json            sample seed file
 tests/                   offline parser tests (pytest)
 scripts/                 dev helper: demo-chart generator

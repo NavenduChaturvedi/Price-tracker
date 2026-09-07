@@ -6,6 +6,7 @@
 *.db
 price_history.db
 charts/
+webapp/_charts/
 
 # Python
 __pycache__/

@@ -39,22 +39,34 @@ def build_chart(identifier: str, output_path: str | None = None) -> str | None:
     times = [datetime.fromisoformat(p.checked_at) for p in points]
     prices = [p.price for p in points]
 
+    # Match the dashboard: off-white ground, charcoal ink, one restrained
+    # brick-red reference line. No bright default palette.
+    ink, ground, brick = "#2b2b2b", "#fbfaf7", "#8c3b3b"
+
     fig, ax = plt.subplots(figsize=(9, 4.5))
-    ax.plot(times, prices, marker="o", linewidth=1.6)
+    fig.patch.set_facecolor(ground)
+    ax.set_facecolor(ground)
+    ax.plot(times, prices, marker="o", markersize=4, linewidth=1.6, color=ink)
 
     if product.target_price is not None:
         ax.axhline(
             product.target_price,
-            color="tab:red",
+            color=brick,
             linestyle="--",
             linewidth=1,
             label=f"target {product.target_price:.2f}",
         )
-        ax.legend(loc="best")
+        ax.legend(loc="best", frameon=False)
 
-    ax.set_title(f"Price history - {product.name or product.url}")
-    ax.set_ylabel(f"price ({product.currency or 'currency'})")
-    ax.grid(True, alpha=0.3)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    for spine in ("left", "bottom"):
+        ax.spines[spine].set_color("#cdc8bb")
+    ax.tick_params(colors="#63615c")
+
+    ax.set_title(f"Price history - {product.name or product.url}", color=ink)
+    ax.set_ylabel(f"price ({product.currency or 'currency'})", color="#63615c")
+    ax.grid(True, alpha=0.25, color="#cdc8bb")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d\n%H:%M"))
     fig.autofmt_xdate()
     fig.tight_layout()

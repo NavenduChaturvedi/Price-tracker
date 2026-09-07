@@ -1,0 +1,4 @@
+# Web dashboard extras. The CLI does not need these.
+#   pip install -r requirements-web.txt
+-r requirements.txt
+flask>=3.0
